@@ -1,0 +1,24 @@
+name: ai_vision
+description: AI Vision App
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dio: ^5.4.0
+  permission_handler: ^11.0.1
+  flutter_tts: ^3.8.5
+  speech_to_text: ^6.5.1
+  vibration: ^1.8.1
+  flutter_sms: ^2.3.3
+  geolocator: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
