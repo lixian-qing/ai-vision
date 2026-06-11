@@ -5,13 +5,14 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 class SpeechService {
   static final stt.SpeechToText _speech = stt.SpeechToText();
   static final FlutterTts _tts = FlutterTts();
+  static bool _initialized = false;
 
-  // 初始化语音引擎
   static Future<bool> initSpeech() async {
-    return await _speech.initialize();
+    if (_initialized) return true;
+    _initialized = await _speech.initialize();
+    return _initialized;
   }
 
-  // 开始语音转文字
   static void startListen({
     required Function(String text) onResult,
     required VoidCallback onStop,
@@ -21,25 +22,24 @@ class SpeechService {
     _speech.listen(
       onResult: (result) {
         onResult(result.recognizedWords);
+        if (result.finalResult) {
+          onStop();
+        }
       },
-      onSoundLevelChange: (level) {},
       listenFor: const Duration(seconds: 30),
     );
   }
 
-  // 停止语音监听
   static void stopListen() {
     _speech.stop();
   }
 
-  // 语音播报文本
   static Future<void> speak(String text) async {
     await _tts.setLanguage("zh-CN");
     await _tts.setSpeechRate(0.9);
     await _tts.speak(text);
   }
 
-  // 停止播报
   static Future<void> stopSpeak() async {
     await _tts.stop();
   }
