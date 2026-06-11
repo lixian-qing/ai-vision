@@ -21,7 +21,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 锁定屏幕竖屏
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -40,7 +39,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. 输入文本框
             TextField(
               controller: _textController,
               minLines: 4,
@@ -52,14 +50,10 @@ class _HomePageState extends State<HomePage> {
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.all(15),
               ),
-              semanticsLabel: "短信输入框，可输入需要检测的短信",
             ),
             const SizedBox(height: 25),
-
-            // 2. 语音转文字 + 安全检测 行
             Row(
               children: [
-                // 麦克风按钮（语音转文字）
                 Expanded(
                   child: SizedBox(
                     height: 80,
@@ -72,15 +66,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       child: Text(
-                        _isListening ? "停止录音" : "🎤 语音输入",
+                        _isListening ? "停止录音" : "语音输入",
                         style: const TextStyle(fontSize: 22, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 15),
-
-                // 安全检测按钮
                 Expanded(
                   child: SizedBox(
                     height: 80,
@@ -95,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
-                              "🔍 安全检测",
+                              "安全检测",
                               style: TextStyle(fontSize: 22, color: Colors.white),
                             ),
                     ),
@@ -104,8 +96,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const SizedBox(height: 30),
-
-            // 3. 检测结果展示
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -123,8 +113,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 40),
-
-            // 4. SOS 一键求助按钮（长按3秒触发）
             GestureDetector(
               onLongPress: () async {
                 setState(() {
@@ -157,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   child: const Text(
-                    "🆘 SOS 紧急求助\n(长按3秒发送)",
+                    "SOS 紧急求助\n(长按3秒发送)",
                     style: TextStyle(fontSize: 28, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -170,7 +158,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // 切换语音监听状态
   void _toggleListen() {
     if (_isListening) {
       SpeechService.stopListen();
@@ -190,7 +177,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // 调用AI安全检测
   Future<void> _checkSms() async {
     String content = _textController.text.trim();
     if (content.isEmpty) {
@@ -211,17 +197,15 @@ class _HomePageState extends State<HomePage> {
     bool isDanger = await AiApiService.checkSmsContent(content);
 
     if (isDanger) {
-      // 危险：红色 + 震动 + 语音播报
       setState(() {
-        _resultText = "⚠️ 检测为【危险/诈骗短信】";
+        _resultText = "检测为【危险/诈骗短信】";
         _resultColor = Colors.red;
       });
       VibrateService.dangerVibrate();
       await SpeechService.speak("警告，检测到危险诈骗短信，请不要相信");
     } else {
-      // 安全：绿色
       setState(() {
-        _resultText = "✅ 检测为【安全短信】";
+        _resultText = "检测为【安全短信】";
         _resultColor = Colors.green;
       });
       await SpeechService.speak("短信检测安全，可以放心");
