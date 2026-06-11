@@ -1,4 +1,4 @@
-import 'package:flutter_sms/flutter_sms.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 
 class SmsService {
@@ -17,17 +17,22 @@ class SmsService {
 【AI视界紧急求助】
 我现在遇到危险，请尽快赶来！
 当前位置：
-经度：${position.longitude}
-纬度：${position.latitude}
+经度：\${position.longitude}
+纬度：\${position.latitude}
 """;
 
-      // 发送短信
-      await sendSMS(
-        message: content,
-        recipients: [emergencyPhone],
-        sendDirect: true, // 直接发送，不跳转短信界面
+      // 使用 url_launcher 打开短信界面
+      final smsUri = Uri(
+        scheme: 'sms',
+        path: emergencyPhone,
+        queryParameters: {'body': content},
       );
-      return true;
+      
+      if (await canLaunchUrl(smsUri)) {
+        await launchUrl(smsUri);
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }
